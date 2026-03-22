@@ -57,6 +57,7 @@ from typing import (  # noqa: Y022,Y037,Y038,Y039,UP035,RUF100
     Type as Type,
     TypedDict as TypedDict,
     TypeVar as _TypeVar,
+    TypeVarTuple as _TypeVarTuple,
     Union as Union,
     _Alias,
     _SpecialForm,
@@ -708,3 +709,8 @@ class Sentinel:
     elif sys.version_info >= (3, 10):
         def __or__(self, other: Any) -> _SpecialForm: ...  # other can be any type form legal for unions
         def __ror__(self, other: Any) -> _SpecialForm: ...  # other can be any type form legal for unions
+
+
+# https://github.com/AshrithSagar/pyHKTs
+_Ts = _TypeVarTuple("_Ts")
+class ParametricSelf(Generic[Unpack[_Ts]]): ...
