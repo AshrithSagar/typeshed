@@ -246,7 +246,6 @@ Literal: _SpecialForm
 TypedDict: _SpecialForm
 
 if sys.version_info >= (3, 11):
-    Self: _SpecialForm
     Never: _SpecialForm
     Unpack: _SpecialForm
     Required: _SpecialForm
@@ -1189,3 +1188,33 @@ if sys.version_info >= (3, 13):
     NoDefault: _NoDefaultType
     TypeIs: _SpecialForm
     ReadOnly: _SpecialForm
+
+
+if sys.version_info >= (3, 11):
+    @final
+    class Self:
+        def __class_getitem__(cls, item: Any) -> GenericAlias: ...
+
+    @final
+    class KindVar:
+        __name__: str
+        __kind__: int
+        __constraints__: tuple[type, ...]
+        __bound__: Any
+        __default__: Any
+        __covariant__: bool
+        __contravariant__: bool
+
+        @overload
+        def __init__(self, name: str, *, kind: int = ..., bound: Any = ..., default: Any = ...) -> None: ...
+        @overload
+        def __init__(self, name: str, *constraints: type, kind: int = ..., default: Any = ...) -> None: ...
+
+        def __getitem__(self, args: Any) -> _KindApplication: ...
+        def __or__(self, right: Any) -> _UnionGenericAlias: ...
+        def __ror__(self, left: Any) -> _UnionGenericAlias: ...
+
+    @final
+    class _KindApplication:
+        __constructor__: KindVar
+        __args__: tuple[Any, ...]
