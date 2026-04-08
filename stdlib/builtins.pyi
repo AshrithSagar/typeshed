@@ -44,7 +44,6 @@ from typing import (  # noqa: Y022,UP035,RUF100
     ClassVar,
     Final,
     Generic,
-    KindVar,
     Mapping,
     MutableMapping,
     MutableSequence,
@@ -79,7 +78,6 @@ from typing_extensions import (  # noqa: Y023
 if sys.version_info >= (3, 14):
     from _typeshed import AnnotateFunc
 
-_F = KindVar("_F")
 _T = TypeVar("_T")
 _I = TypeVar("_I", default=int)
 _T_co = TypeVar("_T_co", covariant=True)
@@ -211,11 +209,11 @@ class type:
     @property
     def __weakrefoffset__(self) -> int: ...
     @overload
-    def __init__(self, o: _F[_T], /) -> None: ...
+    def __init__(self, o: object, /) -> None: ...
     @overload
     def __init__(self, name: str, bases: tuple[type, ...], dict: dict[str, Any], /, **kwds: Any) -> None: ...
     @overload
-    def __new__(cls, o: _F[_T], /) -> type[_F]: ...
+    def __new__(cls, o: object, /) -> type: ...
     @overload
     def __new__(
         cls: type[_typeshed.Self], name: str, bases: tuple[type, ...], namespace: dict[str, Any], /, **kwds: Any

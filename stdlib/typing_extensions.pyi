@@ -47,6 +47,7 @@ from typing import (  # noqa: Y022,Y037,Y038,Y039,UP035,RUF100
     ForwardRef as ForwardRef,
     FrozenSet as FrozenSet,
     Generic as Generic,
+    KindVar as KindVar,
     List as List,
     NoReturn as NoReturn,
     Optional as Optional,
@@ -87,6 +88,7 @@ __all__ = [
     "TypeVar",
     "TypeVarTuple",
     "Unpack",
+    "KindVar",
     # ABCs (from collections.abc).
     "Awaitable",
     "AsyncIterator",
@@ -709,8 +711,3 @@ class Sentinel:
     elif sys.version_info >= (3, 10):
         def __or__(self, other: Any) -> _SpecialForm: ...  # other can be any type form legal for unions
         def __ror__(self, other: Any) -> _SpecialForm: ...  # other can be any type form legal for unions
-
-
-# https://github.com/AshrithSagar/pyHKTs
-_Ts = _TypeVarTuple("_Ts")
-class ParametricSelf(Generic[Unpack[_Ts]]): ...
