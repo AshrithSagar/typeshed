@@ -313,6 +313,9 @@ class Event(Generic[_W_co]):
     type: EventType
     widget: _W_co
     delta: int
+    if sys.version_info >= (3, 15):
+        detail: str
+        user_data: str
     if sys.version_info >= (3, 14):
         def __class_getitem__(cls, item: Any, /) -> GenericAlias: ...
 
@@ -326,21 +329,14 @@ class Variable:
     def trace_add(self, mode: Literal["array", "read", "write", "unset"], callback: Callable[[str, str, str], object]) -> str: ...
     def trace_remove(self, mode: Literal["array", "read", "write", "unset"], cbname: str) -> None: ...
     def trace_info(self) -> list[tuple[tuple[Literal["array", "read", "write", "unset"], ...], str]]: ...
-    if sys.version_info >= (3, 14):
-        @deprecated("Deprecated since Python 3.14. Use `trace_add()` instead.")
-        def trace(self, mode, callback) -> str: ...
-        @deprecated("Deprecated since Python 3.14. Use `trace_add()` instead.")
-        def trace_variable(self, mode, callback) -> str: ...
-        @deprecated("Deprecated since Python 3.14. Use `trace_remove()` instead.")
-        def trace_vdelete(self, mode, cbname) -> None: ...
-        @deprecated("Deprecated since Python 3.14. Use `trace_info()` instead.")
-        def trace_vinfo(self) -> list[Incomplete]: ...
-    else:
-        def trace(self, mode, callback) -> str: ...
-        def trace_variable(self, mode, callback) -> str: ...
-        def trace_vdelete(self, mode, cbname) -> None: ...
-        def trace_vinfo(self) -> list[Incomplete]: ...
-
+    @deprecated("Deprecated since Python 3.14. Use `trace_add()` instead.")
+    def trace(self, mode, callback) -> str: ...
+    @deprecated("Deprecated since Python 3.14. Use `trace_add()` instead.")
+    def trace_variable(self, mode, callback) -> str: ...
+    @deprecated("Deprecated since Python 3.14. Use `trace_remove()` instead.")
+    def trace_vdelete(self, mode, cbname) -> None: ...
+    @deprecated("Deprecated since Python 3.14. Use `trace_info()` instead.")
+    def trace_vinfo(self) -> list[Incomplete]: ...
     def __eq__(self, other: object) -> bool: ...
     def __del__(self) -> None: ...
     __hash__: ClassVar[None]  # type: ignore[assignment]
@@ -635,6 +631,12 @@ class Misc:
     def grid_slaves(self, row: int | None = None, column: int | None = None) -> list[Widget]: ...
     def place_slaves(self) -> list[Widget]: ...
     slaves = pack_slaves
+    if sys.version_info >= (3, 15):
+        def pack_content(self) -> list[Widget]: ...
+        def grid_content(self, row: int | None = None, column: int | None = None) -> list[Widget]: ...
+        def place_content(self) -> list[Widget]: ...
+        content = pack_content
+
     def event_add(self, virtual: str, *sequences: str) -> None: ...
     def event_delete(self, virtual: str, *sequences: str) -> None: ...
     def event_generate(
@@ -677,8 +679,7 @@ class Misc:
     def __getitem__(self, key: str) -> Any: ...
     def cget(self, key: str) -> Any: ...
     def configure(self, cnf: Any = None) -> Any: ...
-    # TODO: config is an alias of configure, but adding that here creates
-    # conflict with the type of config in the subclasses. See #13149
+    config = configure
 
 class CallWrapper:
     func: Incomplete
@@ -3605,19 +3606,55 @@ class Text(Widget, XView, YView):
     ) -> None: ...
     def scan_mark(self, x: int, y: int) -> None: ...
     def scan_dragto(self, x: int, y: int) -> None: ...
-    def search(
-        self,
-        pattern: str,
-        index: str | float | _tkinter.Tcl_Obj | Widget,
-        stopindex: str | float | _tkinter.Tcl_Obj | Widget | None = None,
-        forwards: bool | None = None,
-        backwards: bool | None = None,
-        exact: bool | None = None,
-        regexp: bool | None = None,
-        nocase: bool | None = None,
-        count: Variable | None = None,
-        elide: bool | None = None,
-    ) -> str: ...  # returns empty string for not found
+    if sys.version_info >= (3, 15):
+        def search(
+            self,
+            pattern: str,
+            index: str | float | _tkinter.Tcl_Obj | Widget,
+            stopindex: str | float | _tkinter.Tcl_Obj | Widget | None = None,
+            forwards: bool | None = None,
+            backwards: bool | None = None,
+            exact: bool | None = None,
+            regexp: bool | None = None,
+            nocase: bool | None = None,
+            count: Variable | None = None,
+            elide: bool | None = None,
+            *,
+            nolinestop: bool | None = None,
+            strictlimits: bool | None = None,
+        ) -> str: ...  # returns empty string for not found
+        def search_all(
+            self,
+            pattern: str,
+            index: str | float | _tkinter.Tcl_Obj | Widget,
+            stopindex: str | float | _tkinter.Tcl_Obj | Widget | None = None,
+            *,
+            forwards: bool | None = None,
+            backwards: bool | None = None,
+            exact: bool | None = None,
+            regexp: bool | None = None,
+            nocase: bool | None = None,
+            count: Variable | None = None,
+            elide: bool | None = None,
+            nolinestop: bool | None = None,
+            overlap: bool | None = None,
+            strictlimits: bool | None = None,
+        ) -> tuple[_tkinter.Tcl_Obj, ...]: ...
+    else:
+        def search(
+            self,
+            pattern: str,
+            index: str | float | _tkinter.Tcl_Obj | Widget,
+            stopindex: str | float | _tkinter.Tcl_Obj | Widget | None = None,
+            forwards: bool | None = None,
+            backwards: bool | None = None,
+            exact: bool | None = None,
+            regexp: bool | None = None,
+            nocase: bool | None = None,
+            count: Variable | None = None,
+            elide: bool | None = None,
+        ) -> str: ...  # returns empty string for not found
+
     def see(self, index: str | float | _tkinter.Tcl_Obj | Widget) -> None: ...
     def tag_add(
         self, tagName: str, index1: str | float | _tkinter.Tcl_Obj | Widget, *args: str | float | _tkinter.Tcl_Obj | Widget
